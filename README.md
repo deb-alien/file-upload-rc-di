@@ -302,7 +302,7 @@ All errors return JSON:
 ---
 
 ## Flow Diagram (Mermaid)
-
+```mermaid
 flowchart TD
     Client["Client Upload (form-data POST)"] --> Routing["Routing-Controllers Route Match"]
     Routing --> MulterV1["Multer V1: Basic middleware"]
@@ -318,7 +318,7 @@ flowchart TD
     Controller --> GlobalError["GlobalErrorHandler"]
     Routing --> NotFound["NotFoundMiddleware: 404"]
 
-
+```
 ---
 
 ## Advantages
