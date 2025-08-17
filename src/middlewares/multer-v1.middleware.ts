@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import Container from 'typedi';
-import { FileUploadOptions, MulterService } from '../services/multer.service';
+import { FileUploadOptions, MulterService } from '../services/multer-v1.service';
 
-export function multerMiddleware(options: FileUploadOptions) {
+export function multerMiddlewareV1(options: FileUploadOptions) {
 	const multerService = Container.get(MulterService);
 	const uploader = multerService.uploader(options);
 

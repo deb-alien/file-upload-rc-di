@@ -6,12 +6,18 @@ import { Service } from 'typedi';
 @Middleware({ type: 'after' })
 export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
 	error(error: any, request: Request, response: Response, next: (err?: any) => any) {
-		const statusCode = error.httpCode || 500;
+		// Prevent double send
+		if (response.headersSent) {
+			return next(error);
+		}
 
-		return response.status(statusCode).json({
-			name: error.name,
-			message: error.message,
-			stack: error.stack,
+		const status = error.httpCode || 500;
+		const message = error.message || 'Internal Server Error';
+
+		return response.status(status).json({
+			status: 'error',
+			message,
+			stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
 		});
 	}
 }

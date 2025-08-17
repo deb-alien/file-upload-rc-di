@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import { ExpressMiddlewareInterface, Middleware, UseBefore } from 'routing-controllers';
 import Container, { Service } from 'typedi';
-import { FileUploadOptions, MulterService } from '../services/multer.service';
+import { FileUploadOptionsV2, MulterServiceV2 } from '../services/multer-v2.service';
 
 @Service()
 @Middleware({ type: 'before' })
-export class MulterMiddleware implements ExpressMiddlewareInterface {
-	private readonly MulterService: MulterService = Container.get(MulterService);
-	private readonly upload = this.MulterService.uploader(this.options);
+export class MulterMiddlewareV2 implements ExpressMiddlewareInterface {
+	private readonly multerService: MulterServiceV2 = Container.get(MulterServiceV2);
+	private readonly upload = this.multerService.uploader(this.options);
 
-	constructor(private options: FileUploadOptions) {}
+	constructor(private options: FileUploadOptionsV2) {}
 
 	use(request: Request, response: Response, next: NextFunction) {
 		const handler =
@@ -22,12 +22,12 @@ export class MulterMiddleware implements ExpressMiddlewareInterface {
 }
 
 // factory
-export function MulterMiddlewareFactory(options: FileUploadOptions) {
-	const instance = new MulterMiddleware(options);
+export function MulterMiddlewareFactoryV2(options: FileUploadOptionsV2) {
+	const instance = new MulterMiddlewareV2(options);
 	return instance.use.bind(instance);
 }
 
 // decorator
-export function UploadedFiles(options: FileUploadOptions) {
-	return UseBefore(MulterMiddlewareFactory(options));
+export function MulterMiddlewareFactoryV2Decorator(options: FileUploadOptionsV2) {
+	return UseBefore(MulterMiddlewareFactoryV2(options));
 }

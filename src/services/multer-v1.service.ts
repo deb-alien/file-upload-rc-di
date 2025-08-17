@@ -50,26 +50,3 @@ export class MulterService {
 		});
 	}
 }
-
-// @Service()
-// @Middleware({ type: 'before' })
-// export class MulterMiddleware implements ExpressMiddlewareInterface {
-// 	private readonly MulterService: MulterService = Container.get(MulterService);
-// 	private readonly upload = this.MulterService.uploader(this.options);
-
-// 	constructor(private options: FileUploadOptions) {}
-
-// 	use(request: Request, response: Response, next: NextFunction) {
-// 		const handler =
-// 			this.options.maxCount && this.options.maxCount > 1
-// 				? this.upload.array(this.options.fieldName ?? 'file', this.options.maxCount)
-// 				: this.upload.single(this.options.fieldName ?? 'files');
-
-// 		handler(request, response, next);
-// 	}
-// }
-
-// export function MulterMiddlewareFactory(options: FileUploadOptions) {
-// 	const middleware = new MulterMiddleware(options);
-// 	return middleware.use.bind(middleware);
-// }

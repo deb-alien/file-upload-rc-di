@@ -1,18 +1,26 @@
 import { Request } from 'express';
 import { Controller, Post, Req, UseBefore } from 'routing-controllers';
 import { Service } from 'typedi';
-import { multerMiddleware } from '../middlewares/multer-v1.middleware';
-import { MulterMiddlewareFactory, UploadedFiles } from '../middlewares/multer-v2.middleware';
+import { multerMiddlewareV1 } from '../middlewares/multer-v1.middleware';
+import { MulterMiddlewareFactoryV2, MulterMiddlewareFactoryV2Decorator } from '../middlewares/multer-v2.middleware';
+import { MulterMiddlewareFactoryV3, MulterMiddlewareFactoryV3Decorator } from '../middlewares/multer-v3.middleware';
 
 @Service()
 @Controller('/upload')
 export class UploadController {
+	// ================================
+	// V1: Basic Multer Middleware
+	// ================================
+
+	/**
+	 * Single file upload (avatar) using v1 middleware
+	 * Max size: 2MB, Allowed types: JPEG, PNG
+	 */
 	@Post('/multer-v1/avatar')
 	@UseBefore(
-		multerMiddleware({
-			// single file upload
+		multerMiddlewareV1({
 			fieldName: 'avatar',
-			maxSizeMB: 2, // max 2MB
+			maxSizeMB: 2,
 			allowedMimeTypes: ['image/jpeg', 'image/png'],
 		})
 	)
@@ -21,49 +29,101 @@ export class UploadController {
 		return { success: true, avatar };
 	}
 
+	/**
+	 * Multiple files upload (photos) using v1 middleware
+	 * Max count: 5, Max size per file: 5MB, Allowed types: JPEG, PNG
+	 */
 	@Post('/multer-v1/gallery')
 	@UseBefore(
-		multerMiddleware({
-			// multiple file upload
+		multerMiddlewareV1({
 			fieldName: 'photos',
 			maxCount: 5,
-			maxSizeMB: 5, // max 5MB
+			maxSizeMB: 5,
 			allowedMimeTypes: ['image/jpeg', 'image/png'],
 		})
 	)
 	public multerV1Multiple(@Req() req: Request) {
 		const photos = req.files;
-		console.log(photos);
 		return { success: true, photos };
 	}
 
+	// ================================
+	// V2: Middleware Factory + Decorator
+	// ================================
+
+	/**
+	 * Single file upload (avatar) using v2 decorator
+	 * Max size: 2MB, Allowed types: JPEG, PNG
+	 */
 	@Post('/multer-v2/avatar')
-	@UseBefore(
-		MulterMiddlewareFactory({
-			// single file upload
-			fieldName: 'avatar',
-			maxSizeMB: 2,
-			allowedMimeTypes: ['image/jpeg', 'image/png'],
-		})
-	)
-	// @UploadedFiles({ fieldName: 'avatar', maxSizeMB: 2, allowedMimeTypes: ['image/jpeg', 'image/png'] })
+	@MulterMiddlewareFactoryV2Decorator({
+		fieldName: 'avatar',
+		maxSizeMB: 2,
+		allowedMimeTypes: ['image/jpeg', 'image/png'],
+	})
 	public multerV2Single(@Req() req: Request) {
-		const avatar = req.file;
+		const avatar = req.file?.filename;
 		return { success: true, avatar };
 	}
 
+	/**
+	 * Multiple files upload (photos) using v2 factory
+	 * Max count: 5, Max size per file: 5MB, Allowed types: JPEG, PNG
+	 */
 	@Post('/multer-v2/gallery')
-	// @UseBefore(
-	// 	MulterMiddlewareFactory({
-	// 		fieldName: 'photos',
-	// 		maxSizeMB: 5,
-	// 		maxCount: 5,
-	// 		allowedMimeTypes: ['image/jpeg', 'image/png'],
-	// 	})
-	// )
-	@UploadedFiles({ fieldName: 'avatar', maxSizeMB: 5, allowedMimeTypes: ['image/jpeg', 'image/png'] })
+	@UseBefore(
+		MulterMiddlewareFactoryV2({
+			fieldName: 'photos',
+			maxSizeMB: 5,
+			maxCount: 5,
+			allowedMimeTypes: ['image/jpeg', 'image/png'],
+		})
+	)
 	public multerV2Multiple(@Req() req: Request) {
+		const avatar = req.files;
+		return { success: true, avatar };
+	}
+
+	// ================================
+	// V3: Latest Middleware Factory + Decorator
+	// ================================
+
+	/**
+	 * Single file upload using v3 middleware
+	 * Max size: 2MB, Allowed types: JPEG, PNG
+	 */
+	@Post('/multer-v3/avatar')
+	@UseBefore(
+		MulterMiddlewareFactoryV3Decorator({
+			fieldName: 'avatar',
+			maxSizeMB: 2,
+			allowedMimeTypes: ['image/png', 'image/jpeg'],
+		})
+	)
+	upload(@Req() req: Request) {
 		const avatar = req.file;
-		return { success: true, avatar: { filename: avatar?.originalname } };
+		console.log(avatar);
+		return {
+			success: true,
+			avatar,
+		};
+	}
+
+	/**
+	 * Multiple files upload (photos) using v2 factory
+	 * Max count: 5, Max size per file: 5MB, Allowed types: JPEG, PNG
+	 */
+	@Post('/multer-v3/gallery')
+	@UseBefore(
+		MulterMiddlewareFactoryV2({
+			fieldName: 'photos',
+			maxSizeMB: 5,
+			maxCount: 5,
+			allowedMimeTypes: ['image/jpeg', 'image/png'],
+		})
+	)
+	public multerV3Multiple(@Req() req: Request) {
+		const avatar = req.files;
+		return { success: true, avatar };
 	}
 }
