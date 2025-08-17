@@ -132,9 +132,7 @@ export function MulterMiddlewareFactoryV3(options: FileUploadOptions) {
 
 ---
 
-# 📄 README.md for GitHub
 
-````markdown
 # MulterMiddleware V3 for Express & Routing-Controllers
 
 This project demonstrates a **modular, fully typed Multer middleware** for Express + `routing-controllers` using TypeScript and dependency injection with `typedi`.
