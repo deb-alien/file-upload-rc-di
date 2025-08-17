@@ -303,22 +303,21 @@ All errors return JSON:
 
 ## Flow Diagram (Mermaid)
 
-```mermaid
 flowchart TD
-    Client[Client Upload (form-data POST)] --> Routing[Routing-Controllers Route Match]
-    Routing --> MulterV1[Multer V1: Basic middleware]
-    Routing --> MulterV2[Multer V2: Factory + DI + Decorator]
-    Routing --> MulterV3[Multer V3: Lazy init + Dynamic handler]
-    MulterV1 --> EngineV1[Multer Engine (memory/disk)]
-    MulterV2 --> EngineV2[Multer Engine (memory/disk)]
-    MulterV3 --> EngineV3[Multer Engine (memory/disk)]
-    EngineV1 --> Controller[Controller Action: req.file / req.files]
+    Client["Client Upload (form-data POST)"] --> Routing["Routing-Controllers Route Match"]
+    Routing --> MulterV1["Multer V1: Basic middleware"]
+    Routing --> MulterV2["Multer V2: Factory + DI + Decorator"]
+    Routing --> MulterV3["Multer V3: Lazy init + Dynamic handler"]
+    MulterV1 --> EngineV1["Multer Engine (memory/disk)"]
+    MulterV2 --> EngineV2["Multer Engine (memory/disk)"]
+    MulterV3 --> EngineV3["Multer Engine (memory/disk)"]
+    EngineV1 --> Controller["Controller Action: req.file / req.files"]
     EngineV2 --> Controller
     EngineV3 --> Controller
-    Controller --> Response[Return JSON Success]
-    Controller --> GlobalError[GlobalErrorHandler]
-    Routing --> NotFound[NotFoundMiddleware: 404]
-```
+    Controller --> Response["Return JSON Success"]
+    Controller --> GlobalError["GlobalErrorHandler"]
+    Routing --> NotFound["NotFoundMiddleware: 404"]
+
 
 ---
 
