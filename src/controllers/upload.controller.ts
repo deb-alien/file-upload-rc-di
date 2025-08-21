@@ -138,7 +138,7 @@ export class UploadController {
 		allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'],
 		fieldName: 'avatar',
 	})
-	public async updateProfile(@Body() body: any, @GetUploadFile('avatar') file: Express.Multer.File) {
+	public async uploadAvatar(@Body() body: any, @GetUploadFile('avatar') file: Express.Multer.File) {
 		console.log(body);
 		console.log(file);
 
@@ -153,7 +153,7 @@ export class UploadController {
 		maxCount: 10,
 		maxSizeMB: 5,
 	})
-	public async updateGallery(@GetUploadFiles('gallery') files: Express.Multer.File[]) {
+	public async uploadGallery(@GetUploadFiles('gallery') files: Express.Multer.File[]) {
 		console.log(files);
 		return {};
 	}
