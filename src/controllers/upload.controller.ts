@@ -1,9 +1,10 @@
 import { Request } from 'express';
-import { Controller, Post, Req, UseBefore } from 'routing-controllers';
+import { Body, Controller, HttpCode, Post, Req, UseBefore } from 'routing-controllers';
 import { Service } from 'typedi';
 import { multerMiddlewareV1 } from '../middlewares/multer-v1.middleware';
 import { MulterMiddlewareFactoryV2, MulterMiddlewareFactoryV2Decorator } from '../middlewares/multer-v2.middleware';
 import { MulterMiddlewareFactoryV3, MulterMiddlewareFactoryV3Decorator } from '../middlewares/multer-v3.middleware';
+import { GetUploadFile, GetUploadFiles, UploadedFilesMiddleware } from '../decorators/upload-file.decorators';
 
 @Service()
 @Controller('/upload')
@@ -22,7 +23,7 @@ export class UploadController {
 			fieldName: 'avatar',
 			maxSizeMB: 2,
 			allowedMimeTypes: ['image/jpeg', 'image/png'],
-		})
+		}),
 	)
 	public multerV1Single(@Req() req: Request) {
 		const avatar = req.file;
@@ -40,7 +41,7 @@ export class UploadController {
 			maxCount: 5,
 			maxSizeMB: 5,
 			allowedMimeTypes: ['image/jpeg', 'image/png'],
-		})
+		}),
 	)
 	public multerV1Multiple(@Req() req: Request) {
 		const photos = req.files;
@@ -77,7 +78,7 @@ export class UploadController {
 			maxSizeMB: 5,
 			maxCount: 5,
 			allowedMimeTypes: ['image/jpeg', 'image/png'],
-		})
+		}),
 	)
 	public multerV2Multiple(@Req() req: Request) {
 		const avatar = req.files;
@@ -98,7 +99,7 @@ export class UploadController {
 			fieldName: 'avatar',
 			maxSizeMB: 2,
 			allowedMimeTypes: ['image/png', 'image/jpeg'],
-		})
+		}),
 	)
 	upload(@Req() req: Request) {
 		const avatar = req.file;
@@ -120,10 +121,40 @@ export class UploadController {
 			maxSizeMB: 5,
 			maxCount: 5,
 			allowedMimeTypes: ['image/jpeg', 'image/png'],
-		})
+		}),
 	)
 	public multerV3Multiple(@Req() req: Request) {
 		const avatar = req.files;
 		return { success: true, avatar };
+	}
+
+	// ================================
+	// Decorators Usage Example
+	// ================================
+
+	@Post('/upload-avatar')
+	@HttpCode(200)
+	@UploadedFilesMiddleware({
+		allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'],
+		fieldName: 'avatar',
+	})
+	public async updateProfile(@Body() body: any, @GetUploadFile('avatar') file: Express.Multer.File) {
+		console.log(body);
+		console.log(file);
+
+		return {};
+	}
+
+	@Post('/upload-gallery')
+	@HttpCode(200)
+	@UploadedFilesMiddleware({
+		allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'],
+		fieldName: 'gallery',
+		maxCount: 10,
+		maxSizeMB: 5,
+	})
+	public async updateGallery(@GetUploadFiles('gallery') files: Express.Multer.File[]) {
+		console.log(files);
+		return {};
 	}
 }
