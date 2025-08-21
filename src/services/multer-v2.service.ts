@@ -31,7 +31,7 @@ export class MulterServiceV2 {
 			},
 			fileFilter: (_req, file: Express.Multer.File, acceptFile: FileFilterCallback) => {
 				if (options.allowedMimeTypes && !options.allowedMimeTypes.includes(file.mimetype)) {
-					return acceptFile(new Error(`❌ File type '${file.mimetype}' is not allowed.`));
+					return acceptFile(new Error(`File type '${file.mimetype}' is not allowed.`));
 				}
 				acceptFile(null, true);
 			},
